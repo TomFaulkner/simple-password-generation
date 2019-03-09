@@ -1,0 +1,23 @@
+[tool.poetry]
+name = "passwordgen"
+version = "0.1.0"
+description = "Secure Password Generator and Checker (uses HaveIBeenPwned)"
+authors = ["Tom Faulkner <tomfaulkner@gmail.com>"]
+license = "GPL-3.0+"
+readme = "README.md"
+repository = "https://github.com/TomFaulkner/simple-password-generation"
+keywords = ["passwords", "security"]
+
+[tool.poetry.dependencies]
+python = "^3.6"
+requests = "^2.21"
+
+[tool.poetry.dev-dependencies]
+pytest = "^3.0"
+
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"
+
+[tool.poetry.scripts]
+poetry = 'passwordgen:create_password'
