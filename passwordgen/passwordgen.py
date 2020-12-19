@@ -1,6 +1,7 @@
 import hashlib
 import os
 import secrets
+import string
 
 import requests
 
@@ -14,7 +15,7 @@ def _gen_pass():
         return " ".join(secrets.choice(words) for i in range(6))
 
 
-def check_pass(raw_password):
+def check_havebeenpwned(raw_password):
     """check password against known common passwords
     True if good password, False if bad
 
@@ -38,10 +39,46 @@ def create_password():
     """
     for _ in range(5):
         pwd = _gen_pass()
-        if check_pass(pwd):
+        if check_havebeenpwned(pwd):
             return pwd
     else:
         raise ValueError("Unable to generate a secure password.")
+
+
+def scoring(
+    password,
+    *,
+    minimum_length=8,
+    minimum_score=20,
+    points_for_lower=2,
+    points_for_upper=2,
+    points_for_numbers=2,
+    points_per_special=2,
+    special_characters=" !@#$%^&*()-=_+.,<>[]{}/?\\|",
+    points_per_character=1,
+):
+    """check password against rules, returns passing: bool and a score.
+    This method has the advantage of not requiring stupid rules that cause
+    issues for those using a proper password manager, while requiring relatively
+    strong passwords.
+    """
+    score = 0
+    passing = len(password) > minimum_length
+    if any([char for char in password if char in string.ascii_lowercase]):
+        score += points_for_lower
+    if any([char for char in password if char in string.ascii_uppercase]):
+        score += points_for_upper
+    if any([char for char in password if char in string.digits]):
+        score += points_for_numbers
+    score += (
+        len([char for char in password if char in special_characters])
+        * points_per_special
+    )
+    score += len(password) * points_per_character
+    if passing:
+        passing = score > minimum_score
+
+    return passing, score
 
 
 if __name__ == "__main__":
