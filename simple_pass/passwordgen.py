@@ -23,7 +23,10 @@ def check_havebeenpwned(raw_password):
     https://haveibeenpwned.com/API/v2
     """
     hash = hashlib.sha1(raw_password.encode()).hexdigest()
-    resp = requests.get(f"https://api.pwnedpasswords.com/range/{hash[:5]}")
+    try:
+        resp = requests.get(f"https://api.pwnedpasswords.com/range/{hash[:5]}", timeout=0.5)
+    except requests.exceptions.ConnectionError:
+        raise ConnectionError("Communication Error to HaveIBeenPwned")
     if resp.ok and resp.text:
         hashes = [x.split(":")[0] for x in resp.text.split("\r\n")]
         if hash.upper()[5:] in hashes:
