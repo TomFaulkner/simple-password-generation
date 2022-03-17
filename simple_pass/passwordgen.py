@@ -7,8 +7,7 @@ import requests
 
 
 def _gen_pass():
-    """generate a secure password
-    """
+    """generate a secure password"""
     dir_path = os.path.dirname(os.path.realpath(__file__))
     with open(f"{dir_path}/words.txt") as f:
         words = [word.strip() for word in f]
@@ -24,7 +23,9 @@ def check_havebeenpwned(raw_password):
     """
     hash = hashlib.sha1(raw_password.encode()).hexdigest()
     try:
-        resp = requests.get(f"https://api.pwnedpasswords.com/range/{hash[:5]}", timeout=0.5)
+        resp = requests.get(
+            f"https://api.pwnedpasswords.com/range/{hash[:5]}", timeout=0.5
+        )
     except requests.exceptions.ConnectionError:
         raise ConnectionError("Communication Error to HaveIBeenPwned")
     if resp.ok and resp.text:
